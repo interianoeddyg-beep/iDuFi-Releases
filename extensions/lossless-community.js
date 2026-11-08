@@ -1,4 +1,9 @@
-/* iDuFi lossless extension v12 (Self-healing providers; resolve returns JSON string).
+/* iDuFi lossless extension v13 (Self-healing providers; resolve returns JSON string).
+ * v13: tracks.monochrome.st REMOVED — resolution selected it fine, but
+ * every stream from the phone timed out (3/3 tracks, HttpDataSource
+ * SocketTimeout), wedging playback in a select->timeout->reselect loop.
+ * The hifi-api rotation (live uptime instances + statics) leads now:
+ * those return Tidal CDN urls, which stream reliably when they answer.
  * v9's qqdl mirrors all died (200 + HTML at the API route). v10:
  *  1. tracks.monochrome.st — direct-file provider, verified alive: the
  *     stream URL is simply {base}/track/{tidalId} (16-bit/44.1 kHz FLAC).
@@ -22,7 +27,6 @@ var BASE_HEADERS = {
 var UPTIME_REGISTRY_URL = 'https://tidal-uptime.geeked.wtf/';
 
 var PROVIDERS = [
-  { name: 'monochrome-tracks', base: 'https://tracks.monochrome.st', direct: true },
   { name: 'hifi-geeked', base: 'https://hifi.geeked.wtf', hifi: true },
   { name: 'bini', base: 'https://tidal.401658.xyz', hifi: true }
 ];
@@ -331,14 +335,9 @@ function resolveInternal(request) {
 
     var tidalId = searchTidal(request);
     if (tidalId) {
-      // 1) The direct provider is quality-agnostic and instant — try it
-      //    before spending budget on the live-list fetch.
-      var directResult = download(PROVIDERS[0], tidalId, '16');
-      if (directResult) return directResult;
-
-      // 2) Self-healing rotation: live uptime instances first, then the
-      //    static hifi-api fallbacks.
-      var providers = fetchLiveProviders().concat(PROVIDERS.slice(1));
+      // Self-healing rotation: live uptime instances first, then the
+      // static hifi-api fallbacks.
+      var providers = fetchLiveProviders().concat(PROVIDERS);
       for (var p = 0; p < providers.length; p++) {
         var provider = providers[p];
         for (var qi = 0; qi < 2; qi++) {
