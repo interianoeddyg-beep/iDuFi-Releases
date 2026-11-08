@@ -1,4 +1,4 @@
-/* iDuFi lossless extension v10 (Self-healing providers).
+/* iDuFi lossless extension v11 (Self-healing providers; resolve returns JSON string).
  * v9's qqdl mirrors all died (200 + HTML at the API route). v10:
  *  1. tracks.monochrome.st — direct-file provider, verified alive: the
  *     stream URL is simply {base}/track/{tidalId} (16-bit/44.1 kHz FLAC).
@@ -309,7 +309,17 @@ function download(provider, id, quality) {
   return null;
 }
 
+// The Kotlin host converts the return value with Context.toString() and
+// JSON-parses it — a plain object becomes "[object Object]" and dies.
+// (This stayed hidden while every provider failed; the first successful
+// result ever produced is what exposed it.) resolve() therefore returns a
+// JSON STRING; the real work lives in resolveInternal().
 function resolve(request) {
+  var r = resolveInternal(request);
+  return r == null ? null : JSON.stringify(r);
+}
+
+function resolveInternal(request) {
   var startedAt = Date.now();
   var budgetMs = 8000; // Increased budget to fight through the Cloudflare tarpit!
   try {
