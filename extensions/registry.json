@@ -2,7 +2,7 @@
   "extensions": [
     {
       "id": "lossless-community",
-      "version": 11,
+      "version": 12,
       "url": "https://raw.githubusercontent.com/interianoeddyg-beep/iDuFi-Releases/main/extensions/lossless-community.js",
       "enabled": true
     }

@@ -1,4 +1,4 @@
-/* iDuFi lossless extension v11 (Self-healing providers; resolve returns JSON string).
+/* iDuFi lossless extension v12 (Self-healing providers; resolve returns JSON string).
  * v9's qqdl mirrors all died (200 + HTML at the API route). v10:
  *  1. tracks.monochrome.st — direct-file provider, verified alive: the
  *     stream URL is simply {base}/track/{tidalId} (16-bit/44.1 kHz FLAC).
